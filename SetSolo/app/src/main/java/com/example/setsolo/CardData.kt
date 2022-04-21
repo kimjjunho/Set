@@ -5,5 +5,5 @@ data class CardData(
     val state: String,
     val num: Int,
     val shape: String,
-    val have: Boolean = true
+    var click: Boolean = true
 )
