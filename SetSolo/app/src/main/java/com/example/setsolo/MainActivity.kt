@@ -3,15 +3,17 @@ package com.example.setsolo
 import android.content.ClipData
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.setsolo.databinding.ActivityMainBinding
+import java.util.*
 import kotlin.math.log
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(){
 
     val TAG = "MainActivity"
 
@@ -20,10 +22,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
 
         for(i in 1..81){
 
@@ -41,10 +43,9 @@ class MainActivity : AppCompatActivity() {
 
             val state : String = if(i in 1..27){ "empty" }else if(i in 28..54){ "line" }else{ "fill" }
 
-            cardArrayAll.add(CardData(color,state,num,shape,true))
+            cardArrayAll.add(CardData(color,state,num,shape,false))
         }
-        val recyclerNumArrayAll = ArrayList<ItemData>()
-        val recyclerNumArray = ArrayList<ItemData>()
+
 
         for(i in 0..80){
             recyclerNumArrayAll.add(ItemData(i))
@@ -59,13 +60,35 @@ class MainActivity : AppCompatActivity() {
                     break
                 }
             }
-            mBinding.recyclerView1.adapter = ItemAdapter(recyclerNumArray)
+            mBinding.recyclerView1.adapter = ItemAdapter(recyclerNumArray,this)
             chooseThreeCardArray.clear()
             threeCardPositionArray.clear()
+        }
+
+        mBinding.refreshBtn.setOnClickListener {
+            mBinding.recyclerView1.adapter = ItemAdapter(recyclerNumArray,this)
         }
 
         mBinding.recyclerView1.layoutManager = GridLayoutManager(applicationContext,3)
         mBinding.recyclerView1.setHasFixedSize(true)
 
+        if(savedInstanceState!=null)
+        {
+            mBinding.recyclerView1.adapter = ItemAdapter(recyclerNumArray,this)
+        }
+
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("a", 1)
+    }
+
+    fun change() {
+        Log.d(TAG, "change: 변경")
+        mBinding.recyclerView1.adapter = ItemAdapter(recyclerNumArray,this)
+        threeCardPositionArray.clear()
+        chooseThreeCardArray.clear()
     }
 }
+

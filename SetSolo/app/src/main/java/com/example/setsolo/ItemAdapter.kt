@@ -1,41 +1,34 @@
 package com.example.setsolo
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.setsolo.databinding.ItemCardBinding
 
-class ItemAdapter(private val itemList:ArrayList<ItemData>):RecyclerView.Adapter<ItemAdapter.CustomViewHolder>() {
+class ItemAdapter(private val itemList:ArrayList<ItemData>,val mainActivity: MainActivity):RecyclerView.Adapter<ItemAdapter.CustomViewHolder>() {
 
     val TAG = "ItemAdapter"
 
-    interface OnItemClickListener{
-        fun onItemClick()
-    }
-
-    private lateinit var mOnItemClickListener: OnItemClickListener
-
-    fun setOnItemClickListener(onItemClickListener: OnItemClickListener){
-        mOnItemClickListener = onItemClickListener
-    }
+    private lateinit var shareView: View
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemAdapter.CustomViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_card,parent,false)
+        shareView  =  view
         return CustomViewHolder(ItemCardBinding.bind(view))
     }
 
     override fun onBindViewHolder(holder: ItemAdapter.CustomViewHolder, position: Int) {
-
         holder.number.text = itemList[position].number.toString()
 
         holder.itemView.setOnClickListener {
             val ownNumber = holder.number.text.toString().toInt()
 
             if(cardArrayAll[ownNumber].click){
-                Log.d(TAG, "position: $position")
 
                 holder.itemView.setBackgroundResource(R.color.white)
                 cardArrayAll[ownNumber].click = false
@@ -56,7 +49,6 @@ class ItemAdapter(private val itemList:ArrayList<ItemData>):RecyclerView.Adapter
             }
 
             if(chooseThreeCardArray.size == 3){
-                val mainActivity = MainActivity()
                 if((cardArrayAll[chooseThreeCardArray[0]].color == cardArrayAll[chooseThreeCardArray[1]].color &&
                             cardArrayAll[chooseThreeCardArray[1]].color == cardArrayAll[chooseThreeCardArray[2]].color)||
                     (cardArrayAll[chooseThreeCardArray[0]].color!= cardArrayAll[chooseThreeCardArray[1]].color&&
@@ -74,11 +66,9 @@ class ItemAdapter(private val itemList:ArrayList<ItemData>):RecyclerView.Adapter
                                 cardArrayAll[chooseThreeCardArray[0]].num != cardArrayAll[chooseThreeCardArray[1]].num&&
                                 cardArrayAll[chooseThreeCardArray[1]].num != cardArrayAll[chooseThreeCardArray[2]].num&&cardArrayAll[chooseThreeCardArray[0]].num != cardArrayAll[chooseThreeCardArray[2]].num){
 
-                                Log.d(TAG, "onBindViewHolder: $threeCardPositionArray")
                                 threeCardPositionArray.sort()
                                 threeCardPositionArray.reverse()
-                                Log.d(TAG, "itemList.size: "+itemList.size)
-                                Log.d(TAG, "onBindViewHolder: $threeCardPositionArray")
+
                                 itemList.removeAt(threeCardPositionArray[0])
                                 notifyItemRemoved(threeCardPositionArray[0])
                                 notifyItemRangeChanged(threeCardPositionArray[0], itemList.size)
@@ -92,20 +82,37 @@ class ItemAdapter(private val itemList:ArrayList<ItemData>):RecyclerView.Adapter
                                 threeCardPositionArray.clear()
                                 chooseThreeCardArray.clear()
 
+                                Toast.makeText(shareView.context,"정답!!",Toast.LENGTH_LONG).show()
                             }
                             else{
-                                Log.d(TAG, "onBindViewHolder: 숫자가 달라요")
+                                Toast.makeText(shareView.context,"숫자가 다름",Toast.LENGTH_SHORT).show()
+                                cardArrayAll[chooseThreeCardArray[0]].click = false
+                                cardArrayAll[chooseThreeCardArray[1]].click = false
+                                cardArrayAll[chooseThreeCardArray[2]].click = false
+                                mainActivity.change()
                             }
                         }
                         else{
-                            Log.d(TAG, "onBindViewHolder: 모양이 달라요")
+                            Toast.makeText(shareView.context,"모양이 다름",Toast.LENGTH_SHORT).show()
+                            cardArrayAll[chooseThreeCardArray[0]].click = false
+                            cardArrayAll[chooseThreeCardArray[1]].click = false
+                            cardArrayAll[chooseThreeCardArray[2]].click = false
+                            mainActivity.change()
                         }
                     }
                     else{
-                        Log.d(TAG, "onBindViewHolder: 상태가 달라용")
+                        Toast.makeText(shareView.context,"상태가 다름",Toast.LENGTH_SHORT).show()
+                        cardArrayAll[chooseThreeCardArray[0]].click = false
+                        cardArrayAll[chooseThreeCardArray[1]].click = false
+                        cardArrayAll[chooseThreeCardArray[2]].click = false
+                        mainActivity.change()
                     }
                 }else{
-                    Log.d(TAG, "onBindViewHolder: 색이 달라용")
+                    Toast.makeText(shareView.context,"색이 다름",Toast.LENGTH_SHORT).show()
+                    cardArrayAll[chooseThreeCardArray[0]].click = false
+                    cardArrayAll[chooseThreeCardArray[1]].click = false
+                    cardArrayAll[chooseThreeCardArray[2]].click = false
+                    mainActivity.change()
                 }
             }
         }
@@ -398,8 +405,6 @@ class ItemAdapter(private val itemList:ArrayList<ItemData>):RecyclerView.Adapter
 
         }
     }
-
-
 
 
 }
