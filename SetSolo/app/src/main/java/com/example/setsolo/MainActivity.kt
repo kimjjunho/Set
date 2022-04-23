@@ -52,24 +52,28 @@ class MainActivity : AppCompatActivity(){
         }
 
         mBinding.addBtn.setOnClickListener {
-            while (true){
-                val range = (0..80).random()
-                if(recyclerNumArrayAll[range] != ItemData(0)){
-                    recyclerNumArray.add(recyclerNumArrayAll[range])
-                    recyclerNumArrayAll[range] = ItemData(0)
-                    break
-                }
-            }
+            Log.d(TAG, "recyclerNumArrayAll.size: "+ recyclerNumArrayAll.size)
+
+            val range = (0 until recyclerNumArrayAll.size).random()
+            recyclerNumArray.add(recyclerNumArrayAll[range])
+            recyclerNumArrayAll.removeAt(range)
+
             mBinding.recyclerView1.adapter = ItemAdapter(recyclerNumArray,this)
+            mBinding.leftCardText.text = "남은 카드 : "+ recyclerNumArrayAll.size+""
+
             chooseThreeCardArray.clear()
             threeCardPositionArray.clear()
+
+            if(recyclerNumArrayAll.size==0){
+                mBinding.addBtn.visibility = View.INVISIBLE
+            }
         }
 
         mBinding.refreshBtn.setOnClickListener {
             mBinding.recyclerView1.adapter = ItemAdapter(recyclerNumArray,this)
         }
 
-        mBinding.recyclerView1.layoutManager = GridLayoutManager(applicationContext,3)
+        mBinding.recyclerView1.layoutManager = GridLayoutManager(applicationContext,5)
         mBinding.recyclerView1.setHasFixedSize(true)
 
         if(savedInstanceState!=null)
