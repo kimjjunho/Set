@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:gravity="center"
-        android:text="남은 카드 : 81    "
+        android:text="남은 카드 : 81장"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/add_btn"
         app:layout_constraintStart_toStartOf="@+id/add_btn"
