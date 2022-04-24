@@ -27,52 +27,54 @@ class MainActivity : AppCompatActivity(){
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        for(i in 1..81){
+        if(savedInstanceState!=null)
+        {
+            mBinding.recyclerView1.adapter = ItemAdapter(recyclerNumArray,this)
+            mBinding.leftCardText.text = "남은 카드 : ${recyclerNumArrayAll.size}장"
+        }
+        if(recyclerNumArrayAll.size == 0){
+            for(i in 1..81){
+                val shape :String = if(i in 1..9||i in 28..36||i in 55..63){ "꼬불" } else if(i in 10..18||i in 37..45||i in 64..72){ "다이아" } else { "원" }
 
-            val shape :String = if(i in 1..9||i in 28..36||i in 55..63){ "꼬불" } else if(i in 10..18||i in 37..45||i in 64..72){ "다이아" } else { "원" }
+                val color : String = if(i in 1..3||i in 10..12||i in 19..21||i in 28..30||i in 37..39||i in 46..48||i in 55..57||i in 64..66||i in 73..75){ "빨강" }
+                else if(i in 4..6||i in 13..15||i in 22..24||i in 31..33||i in 40..42||i in 49..51||i in 58..60||i in 67..69||i in 76..78){ "보라" }
+                else{ "초록" }
 
-            val color : String = if(i in 1..3||i in 10..12||i in 19..21||i in 28..30||i in 37..39||i in 46..48||i in 55..57||i in 64..66||i in 73..75){ "빨강" }
-            else if(i in 4..6||i in 13..15||i in 22..24||i in 31..33||i in 40..42||i in 49..51||i in 58..60||i in 67..69||i in 76..78){ "보라" }
-            else{ "초록" }
+                val num : Int = when {
+                    i%3==1 -> { 1 }
+                    i%3==2 -> { 2 }
+                    else -> { 3 }
+                }
 
-            val num : Int = when {
-                i%3==1 -> { 1 }
-                i%3==2 -> { 2 }
-                else -> { 3 }
+                val state : String = if(i in 1..27){ "empty" }else if(i in 28..54){ "line" }else{ "fill" }
+
+                cardArrayAll.add(CardData(color,state,num,shape,false))
             }
 
-            val state : String = if(i in 1..27){ "empty" }else if(i in 28..54){ "line" }else{ "fill" }
-
-            cardArrayAll.add(CardData(color,state,num,shape,false))
+            for(i in 0..80){
+                recyclerNumArrayAll.add(ItemData(i))
+            }
         }
-
-        for(i in 0..80){
-            recyclerNumArrayAll.add(ItemData(i))
-        }
-
-        val randomArray = ArrayList<ItemData>()
-
-        for(i in 0 until recyclerNumArrayAll.size){
-            val range = (0 until recyclerNumArrayAll.size).random()
-            randomArray.add(recyclerNumArrayAll[range])
-            recyclerNumArrayAll.removeAt(range)
+        else{
+            mBinding.recyclerView1.adapter = ItemAdapter(recyclerNumArray,this)
+            mBinding.leftCardText.text = "남은 카드 : ${recyclerNumArrayAll.size}장"
         }
 
         mBinding.addBtn.setOnClickListener {
-            Log.d(TAG, "recyclerNumArrayAll.size: "+ recyclerNumArrayAll.size)
+            if(recyclerNumArrayAll.size!=0){
+                val range = (0 until recyclerNumArrayAll.size).random()
 
-            recyclerNumArray.add(randomArray[0])
-            randomArray.removeAt(0)
+                recyclerNumArray.add(recyclerNumArrayAll[range])
+                recyclerNumArrayAll.removeAt(range)
+            }
 
             mBinding.recyclerView1.adapter = ItemAdapter(recyclerNumArray,this)
-            val leftCard = 81 - recyclerNumArray.size
-            mBinding.leftCardText.text = "남은 카드 : ${leftCard}장"
-
+            mBinding.leftCardText.text = "남은 카드 : ${recyclerNumArrayAll.size}장"
 
             chooseThreeCardArray.clear()
             threeCardPositionArray.clear()
 
-            if(leftCard==0){
+            if(recyclerNumArrayAll.size==0){
                 mBinding.addBtn.visibility = View.INVISIBLE
             }
         }
@@ -83,12 +85,6 @@ class MainActivity : AppCompatActivity(){
 
         mBinding.recyclerView1.layoutManager = GridLayoutManager(applicationContext,5)
         mBinding.recyclerView1.setHasFixedSize(true)
-
-        if(savedInstanceState!=null)
-        {
-            mBinding.recyclerView1.adapter = ItemAdapter(recyclerNumArray,this)
-            Log.d(TAG, "if: ")
-        }
 
     }
 
@@ -102,14 +98,6 @@ class MainActivity : AppCompatActivity(){
         mBinding.recyclerView1.adapter = ItemAdapter(recyclerNumArray,this)
         threeCardPositionArray.clear()
         chooseThreeCardArray.clear()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        cardArrayAll.clear()
-        recyclerNumArrayAll.clear()
-        recyclerNumArray.clear()
-
     }
 }
 
